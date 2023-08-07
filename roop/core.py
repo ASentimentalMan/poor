@@ -135,7 +135,7 @@ def start() -> None:
     img2img()
     # process image to videos
     extractFrames()
-    # processFrames()
+    processFrames()
     createVideo()
 
 
