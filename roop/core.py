@@ -133,43 +133,7 @@ def start() -> None:
             return
     # process image to image
     if has_image_extension(roop.globals.target_path):
-        roopImage()
-        return
-    # process image to videos
-    extractFrames()
-    # process frame
-    temp_frame_paths = get_temp_frame_paths(roop.globals.target_path)
-    if temp_frame_paths:
-        processFrames(temp_frame_paths)
-    else:
-        update_status('Frames not found...')
-        return
-    # create video
-    createVideo()
-
-
-def destroy() -> None:
-    if roop.globals.target_path:
-        clean_temp(roop.globals.target_path)
-    sys.exit()
-
-
-def run() -> None:
-    parse_args()
-    if not pre_check():
-        return
-    for frame_processor in get_frame_processors_modules(roop.globals.frame_processors):
-        if not frame_processor.pre_check():
-            return
-    limit_resources()
-    if roop.globals.headless:
-        start()
-    else:
-        window = ui.init(start, destroy)
-        window.mainloop()
-
-def roopImage() -> None:
-     shutil.copy2(roop.globals.target_path, roop.globals.output_path)
+        shutil.copy2(roop.globals.target_path, roop.globals.output_path)
         # process frame
         for frame_processor in get_frame_processors_modules(roop.globals.frame_processors):
             update_status('Progressing...', frame_processor.NAME)
@@ -180,8 +144,8 @@ def roopImage() -> None:
             update_status('Processing to image succeed!')
         else:
             update_status('Processing to image failed!')
-
-def extractFrames() -> None:
+        return
+    # process image to videos
     update_status('Creating temporary resources...')
     create_temp(roop.globals.target_path)
     # extract frames
@@ -192,15 +156,17 @@ def extractFrames() -> None:
     else:
         update_status('Extracting frames with 30 FPS...')
         extract_frames(roop.globals.target_path)
-
-def processFrames(temp_frame_paths: str) -> None:
-    print(temp_frame_paths)
-    # for frame_processor in get_frame_processors_modules(roop.globals.frame_processors):
-    #     update_status('Progressing...', frame_processor.NAME)
-    #     frame_processor.process_video(roop.globals.source_path, temp_frame_paths)
-    #     frame_processor.post_process()
-
-def createVideo() -> None:
+    # process frame
+    temp_frame_paths = get_temp_frame_paths(roop.globals.target_path)
+    if temp_frame_paths:
+        for frame_processor in get_frame_processors_modules(roop.globals.frame_processors):
+            update_status('Progressing...', frame_processor.NAME)
+            frame_processor.process_video(roop.globals.source_path, temp_frame_paths)
+            frame_processor.post_process()
+    else:
+        update_status('Frames not found...')
+        return
+    # create video
     if roop.globals.keep_fps:
         fps = detect_fps(roop.globals.target_path)
         update_status(f'Creating video with {fps} FPS...')
@@ -226,3 +192,24 @@ def createVideo() -> None:
         update_status('Processing to video succeed!')
     else:
         update_status('Processing to video failed!')
+
+
+def destroy() -> None:
+    if roop.globals.target_path:
+        clean_temp(roop.globals.target_path)
+    sys.exit()
+
+
+def run() -> None:
+    parse_args()
+    if not pre_check():
+        return
+    for frame_processor in get_frame_processors_modules(roop.globals.frame_processors):
+        if not frame_processor.pre_check():
+            return
+    limit_resources()
+    if roop.globals.headless:
+        start()
+    else:
+        window = ui.init(start, destroy)
+        window.mainloop()
