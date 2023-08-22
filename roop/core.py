@@ -195,10 +195,10 @@ def extractFrames() -> None:
 
 def processFrames(temp_frame_paths: str) -> None:
     print(temp_frame_paths)
-    for frame_processor in get_frame_processors_modules(roop.globals.frame_processors):
-        update_status('Progressing...', frame_processor.NAME)
-        frame_processor.process_video(roop.globals.source_path, temp_frame_paths)
-        frame_processor.post_process()
+    # for frame_processor in get_frame_processors_modules(roop.globals.frame_processors):
+    #     update_status('Progressing...', frame_processor.NAME)
+    #     frame_processor.process_video(roop.globals.source_path, temp_frame_paths)
+    #     frame_processor.post_process()
 
 def createVideo() -> None:
     if roop.globals.keep_fps:
