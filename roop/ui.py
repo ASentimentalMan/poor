@@ -223,6 +223,7 @@ def toggle_preview() -> None:
     if PREVIEW.state() == 'normal':
         PREVIEW.unbind('<Right>')
         PREVIEW.unbind('<Left>')
+        PREVIEW.withdraw()
     elif roop.globals.source_path and roop.globals.target_path:
         init_preview()
         update_preview(roop.globals.reference_frame_number)
